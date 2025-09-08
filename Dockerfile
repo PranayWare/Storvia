@@ -18,8 +18,8 @@ RUN npm run compile
 RUN npm run build
 
 # Step 7: Expose port
-EXPOSE 80
+EXPOSE 3000
 
 # Step 8: Start the app
-CMD ["npm", "run", "start"]
+CMD ["npm", "start"]
 
