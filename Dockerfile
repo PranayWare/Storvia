@@ -1,34 +1,25 @@
+# Step 1: Base image
 FROM node:18-alpine
 
+# Step 2: Set working directory
 WORKDIR /app
 
-# Install latest npm version globally
-RUN npm install -g npm@9
-
-# Copy package.json and package-lock.json first for caching
+# Step 3: Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install dependencies
+# Step 4: Install dependencies
 RUN npm install
 
-# Copy the rest of the project files
-COPY packages ./packages
-COPY themes ./themes
-COPY extensions ./extensions
-COPY public ./public
-COPY media ./media
-COPY config ./config
-COPY translations ./translations
+# Step 5: Copy entire project files
+COPY . .
 
-# Compile source files to dist
+# Step 6: Build the project
 RUN npm run compile
-
-# Build the project
 RUN npm run build
 
-# Expose the application port
+# Step 7: Expose port
 EXPOSE 80
 
-# Run the app
+# Step 8: Start the app
 CMD ["npm", "run", "start"]
 
