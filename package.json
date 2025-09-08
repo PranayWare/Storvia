@@ -24,6 +24,7 @@
   "dependencies": {
     "@evershop/postgres-query-builder": "^1.0.0",
     "config": "^4.1.1",
+    "react-fast-compare": "^3.2.2",
     "winston": "^3.17.0"
   },
   "devDependencies": {
