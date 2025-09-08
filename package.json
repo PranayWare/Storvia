@@ -8,19 +8,22 @@
     "extensions/*"
   ],
   "scripts": {
-  "dev": "node ./packages/evershop/dist/bin/dev/index.js",
-  "start": "node ./packages/evershop/dist/bin/start/index.js",
-  "build": "npm run compile && node ./packages/evershop/dist/bin/build/index.js",
-  "setup": "evershop install",
-  "compile": "rimraf ./packages/evershop/dist && cd ./packages/evershop && swc ./src/ -d dist/ --config-file .swcrc --copy-files --strip-leading-paths",
-  "compile:tsc": "rimraf ./packages/evershop/dist && cd ./packages/evershop && tsc && copyfiles -u 1 \"src/**/*.{graphql,scss,json}\" dist",
-  "start:debug": "node ./packages/evershop/dist/bin/start/index.js --debug",
-  "test": "ALLOW_CONFIG_MUTATIONS=true NODE_OPTIONS=--experimental-vm-modules node_modules/jest/bin/jest.js",
-  "lint": "eslint --fix --ext .js,.jsx,.ts,.tsx .",
-  "prepare": "husky install"
-},
+    "dev": "node ./packages/evershop/dist/bin/dev/index.js",
+    "start": "node ./packages/evershop/dist/bin/start/index.js",
+    "build": "npm run compile && node ./packages/evershop/dist/bin/build/index.js",
+    "setup": "evershop install",
+    "compile": "rimraf ./packages/evershop/dist && cd ./packages/evershop && swc ./src/ -d dist/ --config-file .swcrc --copy-files --strip-leading-paths",
+    "compile:tsc": "rimraf ./packages/evershop/dist && cd ./packages/evershop && tsc && copyfiles -u 1 \"src/**/*.{graphql,scss,json}\" dist",
+    "start:debug": "node ./packages/evershop/dist/bin/start/index.js --debug",
+    "test": "ALLOW_CONFIG_MUTATIONS=true NODE_OPTIONS=--experimental-vm-modules node_modules/jest/bin/jest.js",
+    "lint": "eslint --fix --ext .js,.jsx,.ts,.tsx .",
+    "prepare": "husky install"
+  },
   "author": "The Nguyen (https://evershop.io)",
   "license": "GNU GENERAL PUBLIC LICENSE 3.0",
+  "dependencies": {
+    "@evershop/postgres-query-builder": "^1.0.0"
+  },
   "devDependencies": {
     "@parcel/watcher": "^2.5.1",
     "@swc/cli": "^0.7.7",
@@ -46,5 +49,5 @@
     "ts-jest": "^29.3.2",
     "typescript": "^5.8.3",
     "webpack-bundle-analyzer": "^4.5.0"
-  }
+  },
 }
