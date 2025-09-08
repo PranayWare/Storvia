@@ -22,7 +22,8 @@
   "author": "The Nguyen (https://evershop.io)",
   "license": "GNU GENERAL PUBLIC LICENSE 3.0",
   "dependencies": {
-    "@evershop/postgres-query-builder": "^1.0.0"
+    "@evershop/postgres-query-builder": "^1.0.0",
+    "config": "^4.1.1"
   },
   "devDependencies": {
     "@parcel/watcher": "^2.5.1",
@@ -51,4 +52,3 @@
     "webpack-bundle-analyzer": "^4.5.0"
   }
 }
-
