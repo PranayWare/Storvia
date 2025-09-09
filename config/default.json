@@ -2,12 +2,12 @@
   "db": {
     "client": "pg",
     "connection": {
-      "host": "${DB_HOST}",
-      "port": "${DB_PORT}",
-      "user": "${DB_USER}",
-      "password": "${DB_PASSWORD}",
-      "database": "${DB_NAME}",
-      "ssl": false
+      "host": "<YOUR_PRODUCTION_DB_HOST>",
+      "port": 5432,
+      "user": "<YOUR_DB_USER>",
+      "password": "<YOUR_DB_PASSWORD>",
+      "database": "<YOUR_DB_NAME>",
+      "ssl": true
     }
   },
   "server": {
