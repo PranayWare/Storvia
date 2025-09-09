@@ -1,25 +1,23 @@
-# Step 1: Base image
 FROM node:18-alpine
 
-# Step 2: Set working directory
+# Set working directory
 WORKDIR /app
 
-# Step 3: Copy package.json and package-lock.json
+# Copy only package.json files first for caching
 COPY package*.json ./
 
-# Step 4: Install dependencies
+# Install dependencies
 RUN npm install
 
-# Step 5: Copy entire project files
+# Copy entire project
 COPY . .
 
-# Step 6: Build the project
-RUN npm run compile
+# Compile and build
 RUN npm run build
 
-# Step 7: Expose port
+# Expose port (adjust if your app uses a different port)
 EXPOSE 3000
 
-# Step 8: Start the app
+# Start the application
 CMD ["npm", "start"]
 
