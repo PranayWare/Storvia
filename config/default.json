@@ -10,6 +10,9 @@
       "ssl": true
     }
   },
+  "system": {
+      "theme": "eve"
+},
   "server": {
     "port": 3000
   }

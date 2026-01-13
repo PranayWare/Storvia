@@ -3,8 +3,8 @@ import { Modal } from '@components/common/modal/Modal.js';
 import { useModal } from '@components/common/modal/useModal.js';
 import React from 'react';
 import { useQuery } from 'urql';
-import { Zone } from './Zone.js';
-import { ZoneForm } from './ZoneForm.js';
+import { Zone } from './Zone.tsx';
+import { ZoneForm } from './ZoneForm.tsx';
 
 export interface ShippingCountry {
   label: string;
@@ -96,10 +96,10 @@ export function Zones({
       ))}
       <div className="flex justify-end p-5">
         <a
-          href="#"
           className="text-interactive button primary"
           onClick={(e) => {
             e.preventDefault();
+            e.stopPropagation(); // vinayak edited
             modal.open();
           }}
         >

@@ -1,3 +1,4 @@
+// ZoneForm.tsx
 import { Card } from '@components/admin/Card.js';
 import Spinner from '@components/admin/Spinner.js';
 import Button from '@components/common/Button.js';
@@ -5,9 +6,8 @@ import { Form, useFormContext } from '@components/common/form/Form.js';
 import { InputField } from '@components/common/form/InputField.js';
 import { ReactSelectField } from '@components/common/form/ReactSelectField.js';
 import React from 'react';
-import Select from 'react-select';
 import { useQuery } from 'urql';
-import { ShippingZone } from './Zone.js';
+import { ShippingZone } from './Zone.tsx';
 
 export interface ZoneFormProps {
   formMethod?: 'POST' | 'PATCH';
@@ -15,6 +15,17 @@ export interface ZoneFormProps {
   onSuccess: () => void;
   reload: () => void;
   zone?: ShippingZone;
+}
+
+interface CountryOption {
+  value: string;
+  label: string;
+  provinces?: ProvinceOption[];
+}
+
+interface ProvinceOption {
+  value: string;
+  label: string;
 }
 
 const CountriesQuery = `
@@ -30,7 +41,7 @@ const CountriesQuery = `
   }
 `;
 
-function ZoneForm({
+export function ZoneForm({
   formMethod,
   saveZoneApi,
   onSuccess,
@@ -39,20 +50,24 @@ function ZoneForm({
 }: ZoneFormProps) {
   const { watch } = useFormContext();
   const countryWatch = watch('country');
+
   const [{ data, fetching, error }] = useQuery({
     query: CountriesQuery
   });
 
   if (fetching) return <Spinner />;
-  if (error) {
-    return <p className="text-critical">Error loading countries</p>;
-  }
+  if (error) return <p className="text-critical">Error loading countries</p>;
+
+  const countryOptions: CountryOption[] = data?.countries ?? [];
+  const provinceOptions: ProvinceOption[] =
+    countryOptions.find((c) => c.value === countryWatch)?.provinces ?? [];
+
   return (
     <Card title="Create a shipping zone">
       <Form
         id="createShippingZone"
         method={formMethod || 'POST'}
-        action={saveZoneApi}
+        action={saveZoneApi} // required
         submitBtn={false}
         onSuccess={async () => {
           await reload();
@@ -65,31 +80,34 @@ function ZoneForm({
             placeholder="Enter zone name"
             required
             validation={{ required: 'Zone name is required' }}
-            value={zone?.name}
+            value={zone?.name ?? ''}
           />
         </Card.Session>
+
         <Card.Session title="Country">
           <ReactSelectField
             name="country"
-            options={data.countries}
-            hideSelectedOptions={false}
+            options={countryOptions}
             isMulti={false}
+            hideSelectedOptions={false}
+            defaultValue={zone?.country?.code ?? ''}
             aria-label="Select country"
-            defaultValue={zone?.country?.code}
+            placeholder="Select country"
           />
         </Card.Session>
+
         <Card.Session title="Provinces/States">
-          <Select
+          <ReactSelectField
             name="provinces"
-            options={
-              data.countries.find((c) => c.value === countryWatch)?.provinces ||
-              []
-            }
-            hideSelectedOptions
+            options={provinceOptions}
             isMulti
-            defaultValue={zone?.provinces || []}
+            hideSelectedOptions={false}
+            defaultValue={zone?.provinces?.map((p) => p.code) ?? []}
+            placeholder="Select provinces/states"
+            aria-label="Select provinces or states"
           />
         </Card.Session>
+
         <Card.Session>
           <div className="flex justify-end gap-2">
             <Button
@@ -101,10 +119,7 @@ function ZoneForm({
                 ) as HTMLFormElement | null;
                 if (form) {
                   form.dispatchEvent(
-                    new Event('submit', {
-                      cancelable: true,
-                      bubbles: true
-                    })
+                    new Event('submit', { cancelable: true, bubbles: true })
                   );
                 }
               }}
@@ -115,5 +130,3 @@ function ZoneForm({
     </Card>
   );
 }
-
-export { ZoneForm };

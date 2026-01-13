@@ -61,8 +61,18 @@ function validateProductDataBeforeInsert(data: ProductData) {
     productDataSchema,
     {}
   );
+
+  // ✅ Fix: normalize images
+  if (Array.isArray(data.images)) {
+    data.images = data.images.map((img: any) =>
+      typeof img === 'object' && img.url ? img.url : img
+    );
+  }
+// end
+
   const validate = ajv.compile(jsonSchema);
   const valid = validate(data);
+
   if (valid) {
     return data;
   } else {

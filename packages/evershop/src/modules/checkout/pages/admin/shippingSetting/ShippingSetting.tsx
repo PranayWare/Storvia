@@ -2,7 +2,7 @@ import { Card } from '@components/admin/Card.js';
 import { SettingMenu } from '@components/admin/SettingMenu.js';
 import Button from '@components/common/Button.js';
 import React from 'react';
-import { Zones } from './shippingSetting/Zones.js';
+import { Zones } from './shippingSetting/Zones.tsx';
 
 export default function ShippingSetting({
   createShippingZoneApi

@@ -1,8 +1,8 @@
 import { Modal } from '@components/common/modal/Modal.js';
 import { useModal } from '@components/common/modal/useModal.js';
 import React from 'react';
-import { Method, ShippingMethod } from './Method.js';
-import { MethodForm } from './MethodForm.js';
+import { Method, ShippingMethod } from './Method.tsx';
+import { MethodForm } from './MethodForm.tsx';
 
 export interface MethodsProps {
   methods: Array<ShippingMethod>;

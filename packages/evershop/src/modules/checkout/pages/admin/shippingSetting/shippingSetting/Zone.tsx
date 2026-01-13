@@ -5,9 +5,9 @@ import { MapPinIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
 import React from 'react';
 import { toast } from 'react-toastify';
-import { ShippingMethod } from './Method.js';
-import { Methods } from './Methods.js';
-import { ZoneForm } from './ZoneForm.js';
+import { ShippingMethod } from './Method.tsx';
+import { Methods } from './Methods.tsx';
+import { ZoneForm } from './ZoneForm.tsx';
 
 export interface ShippingZone {
   name: string;
@@ -33,6 +33,24 @@ export interface ZoneProps {
 
 function Zone({ zone, reload }: ZoneProps) {
   const modal = useModal();
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    try {
+      const response = await axios.delete(zone.deleteApi);
+      if (response.status === 200) {
+        toast.success('Zone removed successfully');
+        setTimeout(() => {
+          reload(); // ✅ reload instead of full page refresh
+        }, 1500);
+      } else {
+        toast.error('Failed to remove zone');
+      }
+    } catch (error) {
+      toast.error('Failed to remove zone');
+    }
+  };
+
   return (
     <Card.Session
       title={
@@ -52,27 +70,7 @@ function Zone({ zone, reload }: ZoneProps) {
             <a
               className="text-critical"
               href="#"
-              onClick={async (e) => {
-                e.preventDefault();
-                try {
-                  const response = await axios.delete(zone.deleteApi);
-                  if (response.status === 200) {
-                    // Toast success
-                    toast.success('Zone removed successfully');
-                    // Delay for 2 seconds
-                    setTimeout(() => {
-                      // Reload page
-                      window.location.reload();
-                    }, 1500);
-                  } else {
-                    // Toast error
-                    toast.error('Failed to remove zone');
-                  }
-                } catch (error) {
-                  // Toast error
-                  toast.error('Failed to remove zone');
-                }
-              }}
+              onClick={handleDelete}
             >
               Remove Zone
             </a>
@@ -108,6 +106,8 @@ function Zone({ zone, reload }: ZoneProps) {
           </div>
         </div>
       </div>
+
+      {/* ✅ Modal for Editing Zone */}
       <Modal
         title={`Edit Zone: ${zone.name}`}
         onClose={modal.close}
@@ -118,7 +118,7 @@ function Zone({ zone, reload }: ZoneProps) {
           saveZoneApi={zone.updateApi}
           onSuccess={() => modal.close()}
           reload={reload}
-          zone={zone}
+          zone={zone} // ✅ pre-fill with zone details
         />
       </Modal>
     </Card.Session>

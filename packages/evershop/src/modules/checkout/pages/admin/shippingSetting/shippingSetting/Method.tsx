@@ -3,7 +3,7 @@ import { useModal } from '@components/common/modal/useModal.js';
 import { CogIcon } from '@heroicons/react/24/outline';
 import React from 'react';
 import { toast } from 'react-toastify';
-import { MethodForm } from './MethodForm.js';
+import { MethodForm } from './MethodForm.tsx';
 
 export interface ShippingMethod {
   methodId: string;

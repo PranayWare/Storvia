@@ -1,6 +1,6 @@
 import { FormButtons } from '@components/admin/FormButtons.js';
-import Area from '@components/common/Area.js';
 import { Form } from '@components/common/form/Form.js';
+import Area from '@components/common/Area.js';
 import React from 'react';
 import { toast } from 'react-toastify';
 
@@ -28,7 +28,9 @@ export default function ProductNewForm({
         }, 1500);
       }}
     >
-      <div className="grid grid-cols-3 gap-x-5 grid-flow-row ">
+    
+    {/* Dynamic Areas for Admin to Customize */}
+      <div className="grid grid-cols-3 gap-x-5 grid-flow-row">
         <div className="col-span-2 grid grid-cols-1 gap-5 auto-rows-max">
           <Area id="leftSide" noOuter />
         </div>
@@ -36,6 +38,61 @@ export default function ProductNewForm({
           <Area id="rightSide" noOuter />
         </div>
       </div>
+
+{/* Static Required Fields */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">
+          Product Name
+        </label>
+        <input
+          type="text"
+          name="name"
+          placeholder="Enter product name"
+          required
+          className="form-input mt-1 block w-full"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">
+          SKU
+        </label>
+        <input
+          type="text"
+          name="sku"
+          placeholder="Enter SKU"
+          required
+          className="form-input mt-1 block w-full"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">
+          Meta Link
+        </label>
+        <input
+          type="url"
+          name="meta_link"
+          placeholder="https://example.com/meta"
+          required
+          className="form-input mt-1 block w-full"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">
+          URL Link
+        </label>
+        <input
+          type="url"
+          name="url_link"
+          placeholder="https://example.com/product"
+          required
+          className="form-input mt-1 block w-full"
+        />
+      </div>
+
+      {/* Submit / Cancel Buttons */}
       <FormButtons formId="productNewForm" cancelUrl={gridUrl} />
     </Form>
   );
