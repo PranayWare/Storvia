@@ -3,8 +3,8 @@ import { Modal } from '@components/common/modal/Modal.js';
 import { useModal } from '@components/common/modal/useModal.js';
 import React from 'react';
 import { useQuery } from 'urql';
-import { Zone } from './Zone.tsx';
-import { ZoneForm } from './ZoneForm.tsx';
+import { Zone } from './Zone.js';
+import { ZoneForm } from './ZoneForm.js';
 
 export interface ShippingCountry {
   label: string;

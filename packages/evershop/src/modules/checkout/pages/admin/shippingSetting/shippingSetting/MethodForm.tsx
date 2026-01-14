@@ -1,12 +1,32 @@
 // MethodForm.tsx
 import { Card } from '@components/admin/Card.js';
-import Spinner from '@components/admin/Spinner.js';
 import Button from '@components/common/Button.js';
-import { Form, useFormContext } from '@components/common/form/Form.js';
 import { InputField } from '@components/common/form/InputField.js';
 import { ReactSelectField } from '@components/common/form/ReactSelectField.js';
 import React from 'react';
-import { ShippingMethod } from './Method.tsx';
+import { FormProvider, useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
+import { ShippingMethod } from './Method.js';
+
+async function createShippingMethod(name: string) {
+  const res = await fetch('/api/shippingMethods', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ name })
+  });
+  
+  const contentType = res.headers.get('content-type');
+  if (!contentType || !contentType.includes('application/json')) {
+    throw new Error(`Invalid response: expected JSON but got ${contentType}`);
+  }
+
+  const json = await res.json();
+  if (!res.ok || json.error) {
+    throw new Error(json.error?.message || `HTTP ${res.status}`);
+  }
+  return json.data;
+}
 
 export interface MethodFormProps {
   formMethod?: 'POST' | 'PATCH';
@@ -23,32 +43,87 @@ export function MethodForm({
   reload,
   method
 }: MethodFormProps) {
-  const { watch } = useFormContext();
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  const form = useForm({
+    defaultValues: {
+      name: method?.name ?? '',
+      cost: method?.cost?.value ?? '',
+      calculation_type: 'flat_rate',
+      condition_type: 'none'
+    }
+  });
 
   const calculationOptions = [
-    { value: 'fixed', label: 'Fixed' },
-    { value: 'percentage', label: 'Percentage' }
+    { value: 'flat_rate', label: 'Fixed Cost' },
+    { value: 'price_based_rate', label: 'Price Based' },
+    { value: 'weight_based_rate', label: 'Weight Based' }
   ];
 
+  const handleSave = async () => {
+    const data = form.getValues();
+
+    try {
+      setIsSubmitting(true);
+
+      let methodId: string | null = null;
+
+      // If creating new method, create it first
+      if (!method) {
+        const created = await createShippingMethod(data.name);
+        methodId = String(
+          created?.shipping_method_id || created?.method_id || created?.id
+        );
+
+        if (!methodId) {
+          throw new Error('Missing method_id from createShippingMethod response');
+        }
+      } else {
+        methodId = String(method.methodId);
+      }
+
+      const payload: any = {
+        method_id: methodId,
+        calculation_type: String(data.calculation_type || 'flat_rate'),
+        condition_type: String(data.condition_type || 'none'),
+        cost: String(data.cost),
+        is_enabled: true
+      };
+
+      // Call the save API
+      const res = await fetch(saveMethodApi, {
+        method: formMethod || 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const json = await res.json();
+        throw new Error(json.error?.message || `HTTP ${res.status}`);
+      }
+
+      const json = await res.json();
+      toast.success('Shipping method saved');
+      await reload();
+      onSuccess();
+    } catch (err: any) {
+      console.error('Save error:', err);
+      toast.error(err.message || 'Something went wrong');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <Card title="Create Shipping Method">
-      <Form
-        id="createShippingMethod"
-        method={formMethod || 'POST'}
-        action={saveMethodApi} // action is required
-        submitBtn={false}
-        onSuccess={async () => {
-          await reload();
-          onSuccess();
-        }}
-      >
+    <div className="p-5">
+      <FormProvider {...form}>
         <Card.Session title="Method name">
           <InputField
             name="name"
             placeholder="Enter method name"
             required
             validation={{ required: 'Method name is required' }}
-            value={method?.name ?? ''}
           />
         </Card.Session>
 
@@ -59,7 +134,7 @@ export function MethodForm({
             isMulti={false}
             hideSelectedOptions={false}
             aria-label="Select calculation type"
-            defaultValue={null}
+            placeholder="Select calculation type"
           />
         </Card.Session>
 
@@ -70,32 +145,19 @@ export function MethodForm({
             placeholder="Enter shipping cost"
             required
             validation={{ required: 'Cost is required' }}
-            value={method?.cost?.value ?? ''}
           />
         </Card.Session>
 
         <Card.Session>
           <div className="flex justify-end gap-2">
             <Button
-              title="Save"
+              title={isSubmitting ? 'Saving...' : 'Save'}
               variant="primary"
-              onAction={() => {
-                const form = document.getElementById(
-                  'createShippingMethod'
-                ) as HTMLFormElement | null;
-                if (form) {
-                  form.dispatchEvent(
-                    new Event('submit', {
-                      cancelable: true,
-                      bubbles: true
-                    })
-                  );
-                }
-              }}
+              onAction={handleSave}
             />
           </div>
         </Card.Session>
-      </Form>
-    </Card>
+      </FormProvider>
+    </div>
   );
 }

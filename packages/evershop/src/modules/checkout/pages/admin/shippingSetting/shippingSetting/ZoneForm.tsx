@@ -2,12 +2,13 @@
 import { Card } from '@components/admin/Card.js';
 import Spinner from '@components/admin/Spinner.js';
 import Button from '@components/common/Button.js';
-import { Form, useFormContext } from '@components/common/form/Form.js';
+import { Form } from '@components/common/form/Form.js';
 import { InputField } from '@components/common/form/InputField.js';
 import { ReactSelectField } from '@components/common/form/ReactSelectField.js';
 import React from 'react';
+import { useForm } from 'react-hook-form';
 import { useQuery } from 'urql';
-import { ShippingZone } from './Zone.tsx';
+import { ShippingZone } from './Zone.js';
 
 export interface ZoneFormProps {
   formMethod?: 'POST' | 'PATCH';
@@ -48,8 +49,15 @@ export function ZoneForm({
   reload,
   zone
 }: ZoneFormProps) {
-  const { watch } = useFormContext();
-  const countryWatch = watch('country');
+  const form = useForm({
+    defaultValues: {
+      name: zone?.name ?? '',
+      country: zone?.country?.code ?? '',
+      provinces: zone?.provinces?.map((p) => p.code) ?? []
+    }
+  });
+
+  const countryWatch = form.watch('country');
 
   const [{ data, fetching, error }] = useQuery({
     query: CountriesQuery
@@ -65,6 +73,7 @@ export function ZoneForm({
   return (
     <Card title="Create a shipping zone">
       <Form
+        form={form}
         id="createShippingZone"
         method={formMethod || 'POST'}
         action={saveZoneApi} // required
@@ -80,7 +89,7 @@ export function ZoneForm({
             placeholder="Enter zone name"
             required
             validation={{ required: 'Zone name is required' }}
-            value={zone?.name ?? ''}
+            defaultValue={zone?.name ?? ''}
           />
         </Card.Session>
 

@@ -8,6 +8,7 @@ import { InputField } from '@components/common/form/InputField.js';
 import { BillingAddress } from '@components/frontStore/checkout/checkout/payment/paymentStep/BillingAddress.js';
 import CustomerAddressForm from '@components/frontStore/customer/address/addressForm/Index.js';
 import React, { useEffect, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { useQuery } from 'urql';
 import { _ } from '../../../../../../lib/locale/translate/_.js';
@@ -35,6 +36,35 @@ const QUERY = `
     }
   }
 `;
+
+function PaymentMethodFields({ selectedMethod }) {
+  const { setValue, register } = useFormContext();
+
+  // Register the fields
+  React.useEffect(() => {
+    register('method.method_code', {
+      validate: (value) => {
+        if (!value || value === '') {
+          return _('Please select a payment method');
+        }
+        return true;
+      }
+    });
+    register('method.method_name');
+  }, [register]);
+
+  // Update field values when selectedMethod changes
+  React.useEffect(() => {
+    setValue('method.method_code', selectedMethod?.code || '', {
+      shouldValidate: false
+    });
+    setValue('method.method_name', selectedMethod?.name || '', {
+      shouldValidate: false
+    });
+  }, [selectedMethod, setValue]);
+
+  return null;
+}
 
 interface StepContentProps {
   cart: {
@@ -67,6 +97,13 @@ export function StepContent({
   const [useShippingAddress, setUseShippingAddress] = useState(!billingAddress);
   const { cartId, error, paymentMethods, getPaymentMethods } = useCheckout();
   const [loading, setLoading] = useState(false);
+  const [selectedMethod, setSelectedMethod] = React.useState(null);
+
+  // Update selected method when paymentMethods changes
+  React.useEffect(() => {
+    const selected = paymentMethods?.find((e) => e.selected === true);
+    setSelectedMethod(selected || null);
+  }, [paymentMethods]);
 
   const onSuccess = async (response) => {
     try {
@@ -173,32 +210,11 @@ export function StepContent({
                 </div>
               ))}
             </div>
-            <InputField
-              type="hidden"
-              name="method.method_code"
-              value={
-                paymentMethods.find((e) => e.selected === true)?.code || ''
-              }
-              required
-              validation={{
-                required: _('Please select a payment method')
-              }}
-            />
-            <InputField
-              type="hidden"
-              name="method.method_name"
-              value={
-                paymentMethods.find((e) => e.selected === true)?.name || ''
-              }
-              required
-              validation={{
-                required: _('Please select a payment method')
-              }}
-            />
-            <input type="hidden" value="billing" name="type" />
+            <PaymentMethodFields selectedMethod={selectedMethod} />
+            <InputField type="hidden" name="type" value="billing" required />
           </>
         )}
-        {paymentMethods.length === 0 && (
+        {(!paymentMethods || paymentMethods.length === 0) && (
           <div className="alert alert-warning">
             {_('No payment method available')}
           </div>

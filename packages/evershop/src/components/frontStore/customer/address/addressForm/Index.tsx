@@ -5,7 +5,7 @@ import { useQuery } from 'urql';
 
 const CountriesQuery = `
   query Country {
-    allowedCountries  {
+    countries {
       value: code
       label: name
       provinces {
@@ -58,7 +58,7 @@ export default function Index({
     <CustomerAddressForm
       address={address}
       areaId={areaId}
-      allowCountries={data.allowedCountries}
+      allowCountries={data.countries}
       fieldNamePrefix={fieldNamePrefix}
     />
   );

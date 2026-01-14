@@ -5,9 +5,9 @@ import { MapPinIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
 import React from 'react';
 import { toast } from 'react-toastify';
-import { ShippingMethod } from './Method.tsx';
-import { Methods } from './Methods.tsx';
-import { ZoneForm } from './ZoneForm.tsx';
+import { ShippingMethod } from './Method.js';
+import { Methods } from './Methods.js';
+import { ZoneForm } from './ZoneForm.js';
 
 export interface ShippingZone {
   name: string;

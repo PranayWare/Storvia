@@ -86,6 +86,23 @@ export function CustomerAddressForm({
         {
           component: {
             default: (
+              <InputField
+                name={getFieldName('city')}
+                label={_('City')}
+                placeholder={_('City')}
+                defaultValue={address?.city}
+                required
+                validation={{
+                  required: _('City is required')
+                }}
+              />
+            )
+          },
+          sortOrder: 45
+        },
+        {
+          component: {
+            default: (
               <SelectField
                 defaultValue={address?.country?.code || ''}
                 label={_('Country')}
